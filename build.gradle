@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "io.qameta.allure:allure-gradle:2.5"
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'io.qameta.allure'
+
+group 'com.nickgover'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile 'com.codeborne:selenide:5.0.1'
+}
+
+def allureVersion = '2.6.0'
+
+allure {
+    autoconfigure = true
+    version = '2.6.0'
+
+    useJUnit4 {
+        version = '2.6.0'
+    }
+
+}
+
+test {
+    useJUnit()
+}
+
+task generateAllureReport(type: Exec) {
+    commandLine "allure generate build/allure-results -v ${allureVersion} -o build/reports/allure"
+}
+test.finalizedBy(generateAllureReport)
+
+task openAllureReport(type: Exec) {
+    commandLine "allure report open -o build/reports/allure"
+}
